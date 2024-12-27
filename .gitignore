@@ -12,5 +12,8 @@ yarn.lock
 
 .vscode/*
 .idea/*
+.idea
 
 .env
+
+pgdata

@@ -15,5 +15,8 @@
     "@types/express": "^5.0.0",
     "typescript": "^5.5.3"
   },
-  "private": true
+  "private": true,
+  "prisma": {
+    "schema": "src/database/prisma/schema/main.prisma"
+  }
 }
