@@ -13,7 +13,7 @@ export class CategoryUseCase extends BaseUseCase {
 
     async createCategory(title: string) {
         try {
-            return this.CategoryRepository.createCategory(title);
+            return await this.CategoryRepository.createCategory(title);
         } catch (e) {
             processPrismaError(e, 'Category');
         }
@@ -21,19 +21,23 @@ export class CategoryUseCase extends BaseUseCase {
 
     async findCategoryById(id: number) {
         try {
-            return this.CategoryRepository.findCategoryById(id);
+            return await this.CategoryRepository.findCategoryById(id);
         } catch (e) {
             processPrismaError(e, 'Category');
         }
     }
 
     async deleteCategory(id: number) {
-        return this.CategoryRepository.deleteCategory(id);
+        try {
+            return await this.CategoryRepository.deleteCategory(id);
+        } catch (e) {
+            processPrismaError(e, 'Category');
+        }
     }
 
     async updateCategory(id: number, title: string) {
         try {
-            return this.CategoryRepository.updateCategory(id, title);
+            return await this.CategoryRepository.updateCategory(id, title);
         } catch (e) {
             processPrismaError(e, 'Category');
         }
