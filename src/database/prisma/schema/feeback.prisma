@@ -1,0 +1,25 @@
+enum FeedbackStatus {
+  OPEN
+  IN_PROGRESS
+  DONE
+}
+
+model Feedback {
+  id          Int            @id @default(autoincrement())
+  title       String
+  description String
+  status      FeedbackStatus @default(OPEN)
+
+  doneAt    DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  author User @relation(fields: [userId], references: [id])
+  userId Int
+
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId Int
+
+  applicationVersion Application @relation(fields: [applicationId], references: [id])
+  applicationId      Int
+}
