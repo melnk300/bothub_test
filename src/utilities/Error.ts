@@ -34,6 +34,10 @@ export class ProcessingError extends Error {
             status = 422;
         } else if (this.message === "invalid role") {
             status = 403;
+        } else if (this.message === "unauthorized") {
+            status = 401;
+        } else if (this.message === "empty list") {
+            status = 200;
         }
 
         return {

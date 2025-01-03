@@ -27,7 +27,7 @@ export class UserController {
             return;
         }
 
-        let user = await this.userUseCase.fetchUserById(ctx, validated.id);
+        let user = await this.userUseCase.fetchUserById(ctx, Number(validated.id));
         if (ctx.getErrors().length > 0) {
             let error = ctx.getErrors()[0].getError()
             res.status(error.status).json(_.omit(error, ["status"]));
@@ -42,7 +42,7 @@ export class UserController {
 
         let users = await this.userUseCase.fetchUsersList(ctx, req.body.searchParams, req.body.oreders, Number(req.query.limit), Number(req.query.offset));
         if (ctx.getErrors().length > 0) {
-            let error = ctx.getErrors().at(-1)!.getError()
+            let error = ctx.getErrors()[0]!.getError()
             res.status(error.status).json(_.omit(error, ["status"]));
             return;
         }

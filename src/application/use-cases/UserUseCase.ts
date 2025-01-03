@@ -1,5 +1,6 @@
 import {Context} from "../../utilities/Context";
 import {UserRepository} from "../../infrastructure/UserRepository";
+import {ProcessingError} from "../../utilities/Error";
 
 export class UserUseCase {
     private repository: UserRepository;
@@ -10,6 +11,11 @@ export class UserUseCase {
 
     async fetchUserById(ctx: Context, id: number) {
         let user = await this.repository.findById(ctx, id);
+        if (!user) {
+            ctx.addError(new ProcessingError("empty list", "user"));
+            return;
+        }
+
         if (ctx.getErrors().length > 0) {
             return;
         }
@@ -19,6 +25,11 @@ export class UserUseCase {
 
     async fetchUserByEmail(ctx: Context, email: string) {
         let user = await this.repository.findByEmail(ctx, email);
+        if (!user) {
+            ctx.addError(new ProcessingError("empty list", "user"));
+            return;
+        }
+
         if (ctx.getErrors().length > 0) {
             return;
         }

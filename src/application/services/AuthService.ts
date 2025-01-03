@@ -146,7 +146,8 @@ export class AuthService {
 
 
         let user = await this.userRepository.findById(ctx, payload.userId as number);
-        if (ctx.getErrors().length > 0) {
+        if (!user) {
+            ctx.addError(new ProcessingError("invalid token", "auth"));
             return;
         }
 
