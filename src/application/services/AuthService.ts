@@ -95,6 +95,11 @@ export class AuthService {
         }
 
         let jti = await this.tokenRepository.findByJti(ctx, refPayload.jti as string);
+        if (!jti) {
+            ctx.addError(new ProcessingError("token was used", "auth"));
+            return;
+        }
+
         if (ctx.getErrors().length > 0) {
             ctx.addError(new ProcessingError("token was used", "auth"));
             return;
