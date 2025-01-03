@@ -72,4 +72,13 @@ export class UserUseCase {
 
         return users;
     }
+
+    async uploadAvatar(ctx: Context, id: number, avatar: string) {
+        let user = await this.repository.updateAvatar(ctx, id, avatar);
+        if (ctx.getErrors().length > 0) {
+            return;
+        }
+
+        return user;
+    }
 }

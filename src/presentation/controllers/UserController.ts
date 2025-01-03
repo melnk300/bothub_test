@@ -6,16 +6,19 @@ import _ from "lodash";
 import {UserUseCase} from "../../application/use-cases/UserUseCase";
 import {AuthService} from "../../application/services/AuthService";
 import {TokenRepository} from "../../infrastructure/TokenRepository";
+import {FileService} from "../../application/services/FileService";
 
 export class UserController {
     private userUseCase: UserUseCase;
     private userRepo: UserRepository;
     private authService: AuthService;
+    private fileService: FileService;
 
     constructor() {
         this.userRepo = new UserRepository();
         this.userUseCase = new UserUseCase(this.userRepo);
         this.authService = new AuthService(this.userRepo, new TokenRepository());
+        this.fileService = new FileService();
     }
 
     async fetchUserById(req: Request, res: Response) {
@@ -89,6 +92,38 @@ export class UserController {
         res.cookie("refresh_token", user!.tokens.refresh_token, {httpOnly: true});
         res.cookie("access_token", user!.tokens.access_token, {httpOnly: true});
         res.status(200).json(this.serializeUser(user!.user));
+    }
+
+    async uploadAvatar(req: Request, res: Response) {
+        let ctx = new Context();
+
+        if (!req.file) {
+            res.status(400).json({error: "no file uploaded"});
+            return;
+        }
+
+        let user = await this.authService.getUserFromToken(ctx, req.cookies.access_token);
+        if (ctx.getErrors().length > 0) {
+            let error = ctx.getErrors()[0].getError()
+            res.status(error.status).json(_.omit(error, ["status"]));
+            return;
+        }
+
+        let avatar = await this.fileService.uploadAvatar(ctx, req.file);
+        if (ctx.getErrors().length > 0) {
+            let error = ctx.getErrors()[0].getError()
+            res.status(error.status).json(_.omit(error, ["status"]));
+            return;
+        }
+
+        user = await this.userUseCase.uploadAvatar(ctx, user!.id, avatar!);
+        if (ctx.getErrors().length > 0) {
+            let error = ctx.getErrors()[0].getError()
+            res.status(error.status).json(_.omit(error, ["status"]));
+            return;
+        }
+
+        res.status(200).json(this.serializeUser(user));
     }
 
     private serializeUser(user: any) {

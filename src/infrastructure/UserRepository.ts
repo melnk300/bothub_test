@@ -86,4 +86,19 @@ export class UserRepository extends BaseRepository {
             ctx.addError(ProcessingError.processPrismaError(error, "user"));
         }
     }
+
+    async updateAvatar(ctx: Context, id: number, avatar: string) {
+        try {
+            return await this.prisma.user.update({
+                where: {
+                    id: id
+                },
+                data: {
+                    avatar: avatar
+                }
+            });
+        } catch (error) {
+            ctx.addError(ProcessingError.processPrismaError(error, "user"));
+        }
+    }
 }
