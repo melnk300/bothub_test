@@ -126,6 +126,49 @@ export class UserController {
         res.status(200).json(this.serializeUser(user));
     }
 
+    async refreshTokens(req: Request, res: Response) {
+        let ctx = new Context();
+
+        let tokens = await this.authService.refreshTokens(ctx, req.cookies.refresh_token, req.cookies.access_token, req.ip || "");
+        if (ctx.getErrors().length > 0) {
+            let error = ctx.getErrors()[0].getError()
+            res.status(error.status).json(_.omit(error, ["status"]));
+            return;
+        }
+
+        res.cookie("refresh_token", tokens!.refresh_token, {httpOnly: true});
+        res.cookie("access_token", tokens!.access_token, {httpOnly: true});
+        res.status(200).json({access_token: tokens!.access_token});
+    }
+
+    async login(req: Request, res: Response) {
+        let ctx = new Context();
+
+        let validated = validateParams(ctx, req.body, ["email", "password"]);
+        if (ctx.getErrors().length > 0) {
+            res.status(400).json(ctx.getErrors());
+            return;
+        }
+
+        let tokens = await this.authService.login(ctx, validated.email, validated.password, req.ip || "");
+        if (ctx.getErrors().length > 0) {
+            let error = ctx.getErrors()[0].getError()
+            res.status(error.status).json(_.omit(error, ["status"]));
+            return;
+        }
+
+        let user = await this.authService.getUserFromToken(ctx, tokens!.access_token);
+        if (ctx.getErrors().length > 0) {
+            let error = ctx.getErrors()[0].getError()
+            res.status(error.status).json(_.omit(error, ["status"]));
+            return;
+        }
+
+        res.cookie("refresh_token", tokens!.refresh_token, {httpOnly: true});
+        res.cookie("access_token", tokens!.access_token, {httpOnly: true});
+        res.status(200).json(this.serializeUser(user));
+    }
+
     private serializeUser(user: any) {
         return _.omit(user, ["password"]);
     }

@@ -81,19 +81,6 @@ export class AuthService {
             return;
         }
 
-        try {
-            accPayload = jwt.verify(accessToken, process.env.JWT_SECRET!) as JwtPayload;
-        } catch (error) {
-            ctx.addError(new ProcessingError("need refresh", "auth"));
-            return;
-        }
-
-
-        if (refPayload.jti !== accPayload.jti) {
-            ctx.addError(new ProcessingError("invalid token", "auth"));
-            return;
-        }
-
         let jti = await this.tokenRepository.findByJti(ctx, refPayload.jti as string);
         if (!jti) {
             ctx.addError(new ProcessingError("token was used", "auth"));
@@ -131,6 +118,16 @@ export class AuthService {
             return;
         }
 
+        let jti = await this.tokenRepository.findByJti(ctx, payload.jti as string);
+        if (!jti) {
+            ctx.addError(new ProcessingError("invalid token", "auth"));
+            return;
+        }
+
+        if (ctx.getErrors().length > 0) {
+            return;
+        }
+
         let user = await this.userRepository.findById(ctx, payload.userId as number);
         if (ctx.getErrors().length > 0) {
             return;
@@ -146,6 +143,16 @@ export class AuthService {
             payload = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
         } catch (error) {
             ctx.addError(new ProcessingError("invalid token", "auth"));
+            return;
+        }
+
+        let jti = await this.tokenRepository.findByJti(ctx, payload.jti as string);
+        if (!jti) {
+            ctx.addError(new ProcessingError("invalid token", "auth"));
+            return;
+        }
+
+        if (ctx.getErrors().length > 0) {
             return;
         }
 

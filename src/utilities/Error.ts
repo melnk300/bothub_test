@@ -37,7 +37,7 @@ export class ProcessingError extends Error {
         } else if (this.message === "unauthorized") {
             status = 401;
         } else if (this.message === "empty list") {
-            status = 200;
+            status = 204;
         }
 
         return {
