@@ -27,8 +27,8 @@ export class AuthService {
         const signature = process.env.JWT_SECRET || 'secret';
 
         return {
-            access_token: jwt.sign(data, signature, {expiresIn: '15m'}),
-            refresh_token: jwt.sign(data, signature, {expiresIn: '7d'}),
+            access_token: jwt.sign(data, signature, {expiresIn: '15m', algorithm: 'HS256'}),
+            refresh_token: jwt.sign(data, signature, {expiresIn: '7d', algorithm: 'HS256'}),
             jti: jti
         }
     }
@@ -75,7 +75,7 @@ export class AuthService {
         let accPayload: JwtPayload
 
         try {
-            refPayload = jwt.verify(refreshToken, process.env.JWT_SECRET!) as JwtPayload;
+            refPayload = jwt.verify(refreshToken, process.env.JWT_SECRET!, {algorithms: ['HS256']}) as JwtPayload;
         } catch (error) {
             ctx.addError(new ProcessingError("invalid token", "auth"));
             return;
@@ -112,7 +112,7 @@ export class AuthService {
         let payload: JwtPayload;
 
         try {
-            payload = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
+            payload = jwt.verify(token, process.env.JWT_SECRET!, {algorithms: ['HS256']}) as JwtPayload;
         } catch (error) {
             ctx.addError(new ProcessingError("invalid token", "auth"));
             return;
@@ -140,7 +140,7 @@ export class AuthService {
         let payload: JwtPayload;
 
         try {
-            payload = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
+            payload = jwt.verify(token, process.env.JWT_SECRET!, {algorithms: ['HS256']}) as JwtPayload;
         } catch (error) {
             ctx.addError(new ProcessingError("invalid token", "auth"));
             return;
