@@ -17,6 +17,20 @@ app.use(cookieParser());
 app.use('/users', UserRoute);
 app.use('/categories', CategoryRoute);
 
-app.listen(process.env.PORT || 3000, () => {
-    console.log('Server is running on port 3000');
+const server = app.listen(process.env.PORT || 3000, () => {
+    if (process.env.NODE_ENV !== 'test') {
+        console.log('Server is running on port ' + (process.env.PORT || 3000));
+    }
 });
+
+export const closeServer = async () => {
+    return new Promise<void>((resolve, reject) => {
+        server.close(err => {
+            if (err) reject(err);
+            else resolve();
+        });
+    });
+};
+
+
+export default app;

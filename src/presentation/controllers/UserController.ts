@@ -43,7 +43,12 @@ export class UserController {
     async listUsers(req: Request, res: Response) {
         let ctx = new Context();
 
-        let users = await this.userUseCase.fetchUsersList(ctx, req.body.searchParams, req.body.oreders, Number(req.query.limit), Number(req.query.offset));
+        let users = await this.userUseCase.fetchUsersList(ctx,
+            req.body.searchParams,
+            req.body.orders,
+            Number(req.query.limit || 25),
+            Number(req.query.offset || 0));
+
         if (ctx.getErrors().length > 0) {
             let error = ctx.getErrors()[0]!.getError()
             res.status(error.status).json(_.omit(error, ["status"]));
@@ -76,13 +81,13 @@ export class UserController {
     async registerUser(req: Request, res: Response) {
         let ctx = new Context();
 
-        let validated = validateParams(ctx, req.body, ["email", "password", "name"]);
+        let validated = validateParams(ctx, req.body, ["email", "password", "passwordConfirmation", "name"]);
         if (ctx.getErrors().length > 0) {
             res.status(400).json(ctx.getErrors());
             return;
         }
 
-        let user = await this.authService.register(ctx, validated.email, validated.password, validated.name, req.ip || "");
+        let user = await this.authService.register(ctx, validated.email, validated.password, validated.passwordConfirmation, validated.name, req.ip || "");
         if (ctx.getErrors().length > 0) {
             let error = ctx.getErrors()[0].getError()
             res.status(error.status).json(_.omit(error, ["status"]));

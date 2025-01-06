@@ -38,6 +38,10 @@ export class ProcessingError extends Error {
             status = 401;
         } else if (this.message === "empty list") {
             status = 204;
+        } else if (this.message === "invalid entity") {
+            status = 422;
+        } else if (this.message === "invalid credentials") {
+            status = 401;
         }
 
         return {

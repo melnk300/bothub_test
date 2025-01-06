@@ -33,7 +33,12 @@ export class AuthService {
         }
     }
 
-    async register (ctx: Context, email: string, password: string, name: string, ip_address: string) {
+    async register (ctx: Context, email: string, password: string, passwordConfirmation: string, name: string, ip_address: string) {
+        if (password !== passwordConfirmation) {
+            ctx.addError(new ProcessingError("invalid entity", "auth"));
+            return;
+        }
+
         let hashedPassword = await argon2.hash(password);
         let user = await this.userRepository.create(ctx, email, hashedPassword, name);
         if (ctx.getErrors().length > 0) {
@@ -55,8 +60,14 @@ export class AuthService {
             return;
         }
 
-        if (!await argon2.verify(user!.password, password)) {
+        try {
+            if (!await argon2.verify(user!.password, password)) {
+                ctx.addError(new ProcessingError("invalid credentials", "auth"));
+            }
+        } catch (error) {
             ctx.addError(new ProcessingError("invalid credentials", "auth"));
+        }
+        if (ctx.getErrors().length > 0) {
             return;
         }
 

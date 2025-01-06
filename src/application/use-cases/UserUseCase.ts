@@ -64,8 +64,8 @@ export class UserUseCase {
         return user;
     }
 
-    async fetchUsersList(ctx: Context, filterParams: any, orderParams: any, limit?: number , offset?: number) {
-        let users =  await this.repository.list(filterParams, orderParams, limit, offset);
+    async fetchUsersList(ctx: Context, filterParams: any, orderParams: any, limit?: number, offset?: number) {
+        let users =  await this.repository.list(ctx, filterParams, orderParams, offset, limit);
         if (ctx.getErrors().length > 0) {
             return;
         }
