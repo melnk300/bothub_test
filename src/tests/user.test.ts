@@ -5,7 +5,6 @@ import {clearDatabase} from "./utils/prismaTestUtils";
 import {faker} from "@faker-js/faker";
 import {userFixture} from "./utils/fixtures/User";
 import {registerAdmin} from "./utils/UserTestUtils";
-import {log} from "node:util";
 
 beforeEach(async () => {
     await clearDatabase();
@@ -143,7 +142,7 @@ describe('USER API', () => {
 
 
         const response = await request(app)
-            .post('/users')
+            .post('/users/list')
             .set('Content-Type', 'application/json')
             .set('Accept', 'application/json')
             .send({

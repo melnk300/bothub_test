@@ -10,7 +10,7 @@ const userController = new UserController();
 const upload = multer({ storage: multer.memoryStorage() });
 
 router.get('/:id', userController.fetchUserById.bind(userController));
-router.post('/', userController.listUsers.bind(userController));
+router.post('/list', userController.listUsers.bind(userController));
 router.delete('/:id', userController.deleteUser.bind(userController));
 router.post('/register', userController.registerUser.bind(userController));
 router.post('/avatar', upload.single('avatar'), userController.uploadAvatar.bind(userController));

@@ -1,5 +1,4 @@
 import express from 'express';
-// @ts-ignore
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 
