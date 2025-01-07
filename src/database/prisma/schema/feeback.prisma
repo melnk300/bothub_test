@@ -20,6 +20,6 @@ model Feedback {
   category   Category @relation(fields: [categoryId], references: [id])
   categoryId Int
 
-  applicationVersion Application @relation(fields: [applicationId], references: [id])
-  applicationId      Int
+  applicationVersion Application? @relation(fields: [applicationId], references: [id])
+  applicationId      Int?
 }
