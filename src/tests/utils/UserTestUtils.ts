@@ -30,3 +30,20 @@ export const registerAdmin = async () => {
 
     return [response.body, response.header['set-cookie'][1], response.header['set-cookie'][0]];
 }
+
+export const registerUser = async () => {
+    const password = faker.internet.password();
+
+    const response = await request(app)
+        .post('/users/register')
+        .set('Content-Type', 'application/json')
+        .set('Accept', 'application/json')
+        .send({
+            email: faker.internet.email(),
+            password: password,
+            passwordConfirmation: password,
+            name: faker.person.firstName(),
+        });
+
+    return [response.body, response.header['set-cookie'][1], response.header['set-cookie'][0]];
+}

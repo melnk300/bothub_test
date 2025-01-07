@@ -1,7 +1,6 @@
 import {Context} from "../../utilities/Context";
 import {CategoryRepository} from "../../infrastructure/CategoryRepository";
 import {ProcessingError} from "../../utilities/Error";
-import {log} from "node:util";
 
 export class CategoryUseCase {
     private repository: CategoryRepository;
@@ -82,4 +81,6 @@ export class CategoryUseCase {
 
         return categories;
     }
+
+
 }
