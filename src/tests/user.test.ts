@@ -1,23 +1,16 @@
 import request from 'supertest';
-import app, {closeServer} from '../index';
-import afterAll, {beforeEach} from "node:test";
-import {clearDatabase} from "./utils/prismaTestUtils";
+import app from '../index';
 import {faker} from "@faker-js/faker";
 import {userFixture} from "./utils/fixtures/User";
 import {registerAdmin} from "./utils/UserTestUtils";
+import {clearDatabase} from "./utils/PrismaTestUtils";
 
-beforeEach(async () => {
+beforeAll(async () => {
     await clearDatabase();
-});
-
-afterAll(async () => {
-    await closeServer();
-});
+})
 
 describe('AUTH API', () => {
     test('should register a new user', async () => {
-        await clearDatabase();
-
         let password = faker.internet.password();
 
         const response = await request(app)
@@ -37,8 +30,6 @@ describe('AUTH API', () => {
     });
 
     test('should not register a new user with different passwords', async () => {
-        await clearDatabase();
-
         const response = await request(app)
             .post('/users/register')
             .set('Content-Type', 'application/json')
@@ -54,8 +45,6 @@ describe('AUTH API', () => {
     });
 
     test('should not register with non unique email', async () => {
-        await clearDatabase();
-
         let user = await userFixture();
         let password = faker.internet.password();
 
@@ -74,8 +63,6 @@ describe('AUTH API', () => {
     });
 
     test('should login a user', async () => {
-        await clearDatabase();
-
         let password = faker.internet.password();
 
         const userResponse = await request(app)
@@ -104,8 +91,6 @@ describe('AUTH API', () => {
     });
 
     test('should not login a user with invalid credentials', async () => {
-        await clearDatabase();
-
         const response = await request(app)
             .post('/users/login')
             .set('Content-Type', 'application/json')
@@ -119,7 +104,7 @@ describe('AUTH API', () => {
     });
 
     test('should refresh tokens', async () => {
-      const admin = await registerAdmin();
+        const admin = await registerAdmin();
 
         const response = await request(app)
             .post('/users/refresh')
@@ -135,8 +120,6 @@ describe('AUTH API', () => {
 
 describe('USER API', () => {
     test('should get list of users', async () => {
-        await clearDatabase();
-
         let user1 = await userFixture();
         let user2 = await userFixture();
 
@@ -151,13 +134,12 @@ describe('USER API', () => {
                 }
             })
 
-        expect(response.body.map((user: any) => user.id)).toEqual([user1.id]);
+        expect(response.body.map((user: any) => user.id)).toContain(user1.id);
+        expect(response.body.length).toBe(1);
         expect(response.status).toBe(200);
     })
 
     test('should delete a user', async () => {
-        await clearDatabase();
-
         let user = await userFixture();
         let admin = await registerAdmin();
 

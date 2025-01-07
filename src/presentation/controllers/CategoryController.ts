@@ -41,13 +41,12 @@ export class CategoryController {
     async listCategories(req: Request, res: Response) {
         let ctx = new Context();
 
-        debugger
-
         let categories = await this.categoryUseCase.fetchCategoriesList(ctx,
             req.body.searchParams,
-            req.body.oreders,
-            Number(req.query.limit || 25),
-            Number(req.query.offset || 0));
+            req.body.orders,
+            Number(req.query.offset || 0),
+            Number(req.query.limit || 25)
+        );
 
         if (ctx.getErrors().length > 0) {
             let error = ctx.getErrors()[0]!.getError()
