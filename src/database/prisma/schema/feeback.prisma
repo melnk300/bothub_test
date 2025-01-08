@@ -22,4 +22,5 @@ model Feedback {
 
   applicationVersion Application? @relation(fields: [applicationId], references: [id])
   applicationId      Int?
+  Vote               Vote[]
 }
