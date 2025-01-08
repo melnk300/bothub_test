@@ -24,6 +24,13 @@ export class FeedbackRepository extends BaseRepository {
             return await this.prisma.feedback.findMany({
                 where: {
                     userId: userId
+                },
+                include: {
+                    Vote: {
+                        select: {
+                            value: true
+                        }
+                    }
                 }
             });
         } catch (error) {
@@ -52,7 +59,15 @@ export class FeedbackRepository extends BaseRepository {
                 where: filters,
                 skip: offset,
                 take: limit,
-                orderBy: orders
+                orderBy: orders,
+                // calculate sum of all votes for feedback
+                include: {
+                    Vote: {
+                        select: {
+                            value: true
+                        }
+                    }
+                },
             });
         } catch (error) {
             ctx.addError(ProcessingError.processPrismaError(error, "category"));
