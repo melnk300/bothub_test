@@ -16,4 +16,5 @@ model User {
 
   feedbacks Feedback[]
   tokens    Token[]
+  Vote      Vote[]
 }

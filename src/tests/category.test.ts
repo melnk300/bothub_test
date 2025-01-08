@@ -6,9 +6,6 @@ import {registerAdmin} from "./utils/UserTestUtils";
 import {categoryFixture} from "./utils/fixtures/Category";
 import {clearDatabase} from "./utils/PrismaTestUtils";
 
-beforeAll(async () => {
-    await clearDatabase();
-})
 describe('CATEGORY API', () => {
     test('should create a new category', async () => {
         const response = await request(app)
@@ -16,7 +13,7 @@ describe('CATEGORY API', () => {
             .set('Content-Type', 'application/json')
             .set('Accept', 'application/json')
             .send({
-                title: faker.commerce.productName(),
+                title: faker.commerce.productName() + Date.now(),
             });
 
         expect(response.status).toBe(201);

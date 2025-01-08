@@ -2,12 +2,11 @@ import request from 'supertest';
 import app from '../index';
 import {faker} from "@faker-js/faker";
 import {userFixture} from "./utils/fixtures/User";
-import {registerAdmin} from "./utils/UserTestUtils";
+import {registerAdmin, registerUser} from "./utils/UserTestUtils";
 import {clearDatabase} from "./utils/PrismaTestUtils";
-
-beforeAll(async () => {
-    await clearDatabase();
-})
+import {feedbackFixture} from "./utils/fixtures/Feedback";
+import {categoryFixture} from "./utils/fixtures/Category";
+import {voteFixture} from "./utils/fixtures/Vote";
 
 describe('AUTH API', () => {
     test('should register a new user', async () => {
@@ -143,8 +142,6 @@ describe('USER API', () => {
         let user = await userFixture();
         let admin = await registerAdmin();
 
-        console.log(admin);
-
         const response = await request(app)
             .delete(`/users/${user.id}`)
             .set('Content-Type', 'application/json')
@@ -152,5 +149,67 @@ describe('USER API', () => {
             .set('Cookie', admin[1] + "; " + admin[2]);
 
         expect(response.status).toBe(200);
+    })
+
+    test('should get users feedbacks', async () => {
+        const user = await userFixture()
+
+        const category = await categoryFixture();
+        const feedback = await feedbackFixture(user.id, category.id);
+        const feedback2 = await feedbackFixture(user.id, category.id);
+
+        const response = await request(app)
+            .get(`/users/${user.id}/feedbacks`);
+
+        expect(response.status).toBe(200);
+        expect(response.body.length).toBe(2);
+        expect(response.body.map((f: any) => f.id)).toEqual(expect.arrayContaining([feedback.id, feedback2.id]));
+    })
+
+    test('should get feedbacks', async () => {
+        const user = await userFixture()
+
+        const category = await categoryFixture();
+        const feedback = await feedbackFixture(user.id, category.id);
+        const feedback2 = await feedbackFixture(user.id, category.id);
+
+        const response = await request(app)
+            .get(`/users/${user.id}/feedbacks`);
+
+        expect(response.status).toBe(200);
+        expect(response.body.length).toBe(2);
+        expect(response.body.map((f: any) => f.id)).toEqual(expect.arrayContaining([feedback.id, feedback2.id]));
+    })
+
+    test('should get votes by feedback', async () => {
+        const user = await userFixture()
+
+        const category = await categoryFixture();
+        const feedback = await feedbackFixture(user.id, category.id);
+        const vote = await voteFixture(user.id, feedback.id);
+        const vote2 = await voteFixture(user.id, feedback.id);
+
+        const response = await request(app)
+            .get(`/users/${user.id}/feedbacks/${feedback.id}/votes`);
+
+        expect(response.status).toBe(200);
+        expect(response.body.length).toBe(2);
+        expect(response.body.map((v: any) => v.id)).toEqual(expect.arrayContaining([vote.id, vote2.id]));
+    })
+
+    test('should get votes by user', async () => {
+        const user = await userFixture()
+
+        const category = await categoryFixture();
+        const feedback = await feedbackFixture(user.id, category.id);
+        const vote = await voteFixture(user.id, feedback.id);
+        const vote2 = await voteFixture(user.id, feedback.id);
+
+        const response = await request(app)
+            .get(`/users/${user.id}/votes`);
+
+        expect(response.status).toBe(200);
+        expect(response.body.length).toBe(2);
+        expect(response.body.map((v: any) => v.id)).toEqual(expect.arrayContaining([vote.id, vote2.id]));
     })
 })

@@ -16,8 +16,6 @@ export const clearDatabase = async () => {
     }
 
     await prisma.$executeRawUnsafe(`SET session_replication_role = 'origin';`);
-};
 
-export const closeDatabaseConnection = async () => {
     await prisma.$disconnect();
 };

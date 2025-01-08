@@ -12,7 +12,7 @@ export const registerAdmin = async () => {
         .set('Content-Type', 'application/json')
         .set('Accept', 'application/json')
         .send({
-            email: faker.internet.email(),
+            email: `user_${Date.now()}@example.com`,
             password: password,
             passwordConfirmation: password,
             name: faker.person.firstName(),
@@ -39,7 +39,7 @@ export const registerUser = async () => {
         .set('Content-Type', 'application/json')
         .set('Accept', 'application/json')
         .send({
-            email: faker.internet.email(),
+            email: `user_${Date.now()}@example.com`,
             password: password,
             passwordConfirmation: password,
             name: faker.person.firstName(),

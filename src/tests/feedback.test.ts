@@ -6,10 +6,7 @@ import {feedbackFixture} from "./utils/fixtures/Feedback";
 import {userFixture} from "./utils/fixtures/User";
 import {categoryFixture} from "./utils/fixtures/Category";
 import {registerAdmin, registerUser} from "./utils/UserTestUtils";
-
-beforeAll(async () => {
-    await clearDatabase();
-})
+import {voteFixture} from "./utils/fixtures/Vote";
 
 describe('FEEDBACK API', () => {
     test('should create a new feedback', async () => {
@@ -103,5 +100,24 @@ describe('FEEDBACK API', () => {
             .set('Cookie', user[1] + "; " + user[2]);
 
         expect(response.status).toBe(200);
+    })
+
+    test('should get votes by feedback', async () => {
+        const user = await userFixture()
+
+        const category = await categoryFixture();
+        const feedback = await feedbackFixture(user.id, category.id);
+        const feedback2 = await feedbackFixture(user.id, category.id);
+
+        const vote = await voteFixture(user.id, feedback.id);
+        const vote2 = await voteFixture(user.id, feedback.id);
+
+        const response = await request(app)
+            .get(`/feedbacks/${feedback.id}/votes`);
+
+        expect(response.status).toBe(200);
+        expect(response.body.length).toBe(2);
+        expect(response.body.map((f: any) => f.id)).toEqual(expect.arrayContaining([vote.id, vote2.id]));
+
     })
 })

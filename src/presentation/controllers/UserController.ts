@@ -7,18 +7,22 @@ import {UserUseCase} from "../../application/use-cases/UserUseCase";
 import {AuthService} from "../../application/services/AuthService";
 import {TokenRepository} from "../../infrastructure/TokenRepository";
 import {FileService} from "../../application/services/FileService";
+import {FeedbackRepository} from "../../infrastructure/FeedbackRepository";
+import {FeedbackUseCase} from "../../application/use-cases/FeedbackUseCase";
 
 export class UserController {
     private userUseCase: UserUseCase;
     private userRepo: UserRepository;
     private authService: AuthService;
     private fileService: FileService;
+    private feedbackUseCase: FeedbackUseCase;
 
     constructor() {
         this.userRepo = new UserRepository();
         this.userUseCase = new UserUseCase(this.userRepo);
         this.authService = new AuthService(this.userRepo, new TokenRepository());
         this.fileService = new FileService();
+        this.feedbackUseCase = new FeedbackUseCase(new FeedbackRepository());
     }
 
     async fetchUserById(req: Request, res: Response) {

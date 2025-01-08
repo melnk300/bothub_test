@@ -9,16 +9,20 @@ import {validateParams} from "../../utilities/ParamsValidation";
 import _ from "lodash";
 import {ProcessingError} from "../../utilities/Error";
 import {zh_CN} from "@faker-js/faker";
+import {VoteUseCase} from "../../application/use-cases/VoteUseCase";
+import {VoteRepository} from "../../infrastructure/VoteRepository";
 
 export class FeedbackController {
     private feedbackUseCase: FeedbackUseCase;
     private feedbackRepo: FeedbackRepository;
     private authService: AuthService;
+    private voteUseCase: VoteUseCase;
 
     constructor() {
         this.feedbackRepo = new FeedbackRepository();
         this.feedbackUseCase = new FeedbackUseCase(this.feedbackRepo);
         this.authService = new AuthService(new UserRepository(), new TokenRepository());
+        this.voteUseCase = new VoteUseCase(new VoteRepository());
     }
 
     async fetchFeedbackById(req: Request, res: Response) {
@@ -165,5 +169,20 @@ export class FeedbackController {
         }
 
         res.status(200).json(feedback);
+    }
+
+    async fetchUsersFeedbacks(req: Request, res: Response) {
+        let ctx = new Context();
+
+        let validated = validateParams(ctx, req.params, ["id"]);
+
+        let feedbacks = await this.feedbackUseCase.fetchFeedbackByUserId(ctx, Number(validated.id));
+        if (ctx.getErrors().length > 0) {
+            let error = ctx.getErrors()[0]!.getError()
+            res.status(error.status).json(_.omit(error, ["status"]));
+            return;
+        }
+
+        res.status(200).json(feedbacks);
     }
 }

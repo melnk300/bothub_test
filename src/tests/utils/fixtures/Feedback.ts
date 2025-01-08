@@ -6,8 +6,8 @@ export function feedbackFixture (userId: number, categoryId: number) {
 
     return prisma.feedback.create({
         data: {
-            title: faker.commerce.productName(),
-            description: faker.lorem.sentence(),
+            title: faker.commerce.productName() + Date.now(),
+            description: faker.lorem.sentence() + Date.now(),
             userId: userId,
             categoryId: categoryId
         }

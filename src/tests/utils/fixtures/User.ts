@@ -7,7 +7,7 @@ export function userFixture (role: "USER" | "ADMIN" = "USER") {
     return prisma.user.create({
         data: {
             name: faker.person.firstName(),
-            email: faker.internet.email(),
+            email: `user_${Date.now()}@example.com`,
             password: faker.internet.password(),
             role: role
         }

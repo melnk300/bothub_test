@@ -7,6 +7,7 @@ dotenv.config();
 import UserRoute from './presentation/routes/UserRoute';
 import CategoryRoute from "./presentation/routes/CategoryRoute";
 import FeedbackRoute from "./presentation/routes/FeedbackRoute";
+import VoteRoute from "./presentation/routes/VoteRoute";
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.use(cookieParser());
 app.use('/users', UserRoute);
 app.use('/categories', CategoryRoute);
 app.use('/feedbacks', FeedbackRoute);
+app.use('/votes', VoteRoute);
 
 
 if (process.env.NODE_ENV !== 'test') {

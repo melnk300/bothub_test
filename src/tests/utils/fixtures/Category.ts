@@ -6,7 +6,7 @@ export function categoryFixture () {
 
     return prisma.category.create({
         data: {
-            title: faker.commerce.productName(),
+            title: faker.commerce.productName() + Date.now(),
         }
     })
 }
